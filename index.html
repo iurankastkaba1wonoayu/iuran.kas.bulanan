@@ -135,27 +135,31 @@
   }
 
   // Ambil data dari Google Sheets. Hasil: objek (ada data), null (sheet kosong), undefined (gagal / belum diatur)
-  async function loadRemote() {
-    if (!remoteAktif()) return undefined;
-    try {
-      const r = await fetch(SCRIPT_URL);
-      const j = await r.json();
-      return (j && Array.isArray(j.siswa)) ? j : null;
-    } catch (e) { return undefined; }
+  function loadRemote() {
+    if (!remoteAktif()) return Promise.resolve(undefined);
+    return new Promise(resolve => {
+      const cb = 'kasCb' + Date.now();
+      const s = document.createElement('script');
+      const timer = setTimeout(() => finish(undefined), 15000);
+      function finish(v) { clearTimeout(timer); delete window[cb]; s.remove(); resolve(v); }
+      window[cb] = j => finish((j && Array.isArray(j.siswa)) ? j : null);
+      s.onerror = () => finish(undefined);
+      s.src = SCRIPT_URL + (SCRIPT_URL.includes('?') ? '&' : '?') + 'callback=' + cb;
+      document.body.appendChild(s);
+    });
   }
 
   async function pushRemote() {
     if (!remoteAktif()) return;
     setStatus('Menyimpan...');
     try {
-      const r = await fetch(SCRIPT_URL, {
+      await fetch(SCRIPT_URL, {
         method: 'POST',
+        mode: 'no-cors',
         headers: { 'Content-Type': 'text/plain;charset=utf-8' },
         body: JSON.stringify(data)
       });
-      const j = await r.json();
-      if (j && j.ok) setStatus('Tersimpan di Google Sheets ✓');
-      else setStatus('Gagal menyimpan', true);
+      setStatus('Tersimpan di Google Sheets ✓');
     } catch (e) { setStatus('Gagal menyimpan, periksa koneksi', true); }
   }
 
