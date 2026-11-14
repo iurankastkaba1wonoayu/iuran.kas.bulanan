@@ -48,7 +48,7 @@
       <label class="muted">Iuran per bulan (Rp)</label>
       <input type="number" id="nominal" min="0" step="500">
       <label class="muted">Jumlah bulan</label>
-      <input type="number" id="bulanInput" min="1" max="12" step="1">
+      <input type="number" id="bulanInput" min="1" max="10" step="1">
       <button type="submit">Simpan</button>
     </form>
   </div>
@@ -104,7 +104,7 @@
   const SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbyd4ynDFptZ3xxGj8TGA2DUBIiUV3UBirSQrGZtlhV-leyM-SIz7b7ZJAim9avCMqJ6/exec';
   const KEY = 'iuran-tk-aba1-v1';
   const URUT_KELOMPOK = ['KB', 'Kelompok A', 'Kelompok B'];
-  const NAMA_BULAN = ['Juli','Agustus','September','Oktober','November','Desember','Januari','Februari','Maret','April','Mei','Juni'];
+  const NAMA_BULAN = ['Agustus','September','Oktober','November','Desember','Januari','Februari','Maret','April','Mei'];
   const namaBulan = w => NAMA_BULAN[w - 1] || ('Bulan ' + w);
   const DAFTAR_SISWA = [
     ['KB', ['Arsen', 'Azriel', 'Ayasha', 'Faaz', 'Fariz', 'Khalid', 'Rangga', 'Aghnia', 'Anak Us Recca', 'Cucu Us Laili']],
@@ -115,7 +115,7 @@
   const rupiah = n => 'Rp ' + Number(n || 0).toLocaleString('id-ID');
   const esc = s => String(s).replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
   const idBaru = () => Date.now().toString(36) + Math.random().toString(36).slice(2, 6);
-  const defaultData = () => ({ nominal: 2000, bulan: 12, siswa: [], keluar: [] });
+  const defaultData = () => ({ nominal: 2000, bulan: 10, siswa: [], keluar: [] });
   const urutSiswa = () => [...data.siswa].sort((a, b) =>
     (URUT_KELOMPOK.indexOf(a.kelompok) + 1 || 99) - (URUT_KELOMPOK.indexOf(b.kelompok) + 1 || 99));
 
@@ -227,7 +227,7 @@
   document.getElementById('formSetting').addEventListener('submit', e => {
     e.preventDefault();
     data.nominal = Math.max(0, Number(document.getElementById('nominal').value) || 0);
-    data.bulan = Math.min(12, Math.max(1, Number(document.getElementById('bulanInput').value) || 1));
+    data.bulan = Math.min(10, Math.max(1, Number(document.getElementById('bulanInput').value) || 1));
     save(); render();
   });
 
